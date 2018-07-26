@@ -42,6 +42,15 @@ class Challenge(models.Model):
     def __str__(self):
         return "{} | {} | {}".format(self.category, self.point_value, self.name)
 
+    def get_first_blood(self):
+        try:
+            return self.challengesolve_set.all().order_by('solve_time')[0].user.display_name
+        except:
+            return "None"
+
+    def get_total_solves(self):
+        return len(self.challengesolve_set.all())
+
 
 class UserProfile(models.Model):
     """Used for storing all user profile information and statistics."""
@@ -63,6 +72,10 @@ class UserProfile(models.Model):
 
     # Used for sorting the scoreboard
     last_solve_time = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    @property
+    def challenge_solves(self):
+        return ChallengeSolve.objects.get(user=self)
 
 
     @property
